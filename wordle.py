@@ -1,4 +1,5 @@
 from __future__ import annotations
+from doctest import COMPARISON_FLAGS
 __version__ = '0.1.1'
 
 from functools import lru_cache
@@ -58,9 +59,9 @@ def compare(guess: str, answer: str) -> str:
         '#' if a == b
         # asterisk for the correct letter in the wrong spot
         else '*' if a in answer
-        # but do dot match more times than are in the answer
+        # but do not match more times than are in the answer
         and guess[:i].count(a) <= answer.count(a)
-        # unsersore for letters not in the answer at all
+        # underscore for letters not in the answer at all
         else '_'
         for i, (a, b) in enumerate(zip(guess, answer), start=1)
     )
@@ -98,3 +99,20 @@ def score(guess: str, candidates: list[str] = WORDS) -> float:
         - (guess in candidates)
         for candidate in candidates
     ) / len(candidates)
+
+
+def optimize():
+    """A really crappy way to make things 1000x faster."""
+    from functools import wraps
+    from tqdm import tqdm  # progress bar
+    comparisons = {
+        guess: {answer: compare(guess, answer) for answer in WORDS}
+        for guess in tqdm(WORDS)
+    }
+
+    @wraps(compare)
+    def wrapped(guess: str, answer: str) -> str:
+        return comparisons[guess][answer]
+
+    globals()['compare'] = wrapped
+
