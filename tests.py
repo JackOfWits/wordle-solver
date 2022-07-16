@@ -12,6 +12,11 @@ class TestWordle(unittest.TestCase):
             wordle.compare('cocoa', 'coach'),
             '##*_*',
         )
+        # TODO: find a real word that does this
+        self.assertEqual(
+            wordle.compare('enter', 'rivet'),
+            '__*#*',
+        )
 
     def test_filter(self):
         self.assertEqual(
